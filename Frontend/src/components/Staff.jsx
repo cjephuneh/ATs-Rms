@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Clock, Table, ShoppingCart } from 'lucide-react';
 import SideBarMenu from './SideBarMenu';
+import Header from './Header';
 import { AddTeamMemberForm } from './UserManage';
 
 const staffData = [
@@ -55,79 +56,86 @@ const StaffManagement = () => {
   };
 
   return (
-    <div className="flex w-full h-full overflow-x-hidden">
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
       <SideBarMenu activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
-      <div className="bg-white rounded-lg">
-        <div className="flex justify-between items-center p-4 border-b">
-          <div className="flex items-center space-x-2">
-            <Users className="text-gray-600" />
-            <h2 className="text-3xl font-semibold text-black">Staff</h2>
-          </div>
-          <button 
-            onClick={handleAddMember}
-            className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 transition"
-          >
-            + Add team member
-          </button>
-        </div>
-        <div className="p-4 ml-20">
-          <div className="flex justify-between mb-4">
-            <div className="text-gray-600">Total: 4</div>
-            <div className="flex space-x-2">
-              <button className="text-black border-b-blue-500 hover:bg-gray-100 px-2 py-1 rounded">
-                Download report
-              </button>
-              <input 
-                type="date" 
-                className="border text-black rounded px-2 py-1"
-                defaultValue="2025-03-25"
-              />
+      
+      {/* Main content area including Header */}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <Header />
+        
+        <div className="flex-1 mb-80 bg-white rounded-lg">
+          <div className="flex justify-between items-center p-4 border-b">
+            <div className="flex items-center space-x-2">
+              <Users className="text-gray-600" />
+              <h2 className="text-3xl font-semibold text-black">Staff</h2>
             </div>
+            <button 
+              onClick={handleAddMember}
+              className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 transition"
+            >
+              + Add team member
+            </button>
           </div>
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-gray-100 text-gray-600">
-                <th className="p-2">Staff</th>
-                <th className="p-2">Started on</th>
-                <th className="p-2">
-                  <ShoppingCart className="inline-block mr-1" size={16} />
-                  Orders taken
-                </th>
-                <th className="p-2">
-                  <Clock className="inline-block mr-1" size={16} />
-                  Avg serving time
-                </th>
-                <th className="p-2">
-                  <Table className="inline-block mr-1" size={16} />
-                  Tables
-                </th>
-                <th className="p-2">Order total</th>
-                <th className="p-2">Overall tips</th>
-                <th className="p-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {staffData.map((staff) => (
-                <tr key={staff.id} className="border-b text-black hover:bg-gray-50">
-                  <td className="p-2 flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                    <span>{staff.name}</span>
-                  </td>
-                  <td className="p-2">{staff.startedOn}</td>
-                  <td className="p-2">{staff.ordersTaken}</td>
-                  <td className="p-2">{staff.avgServingTime}</td>
-                  <td className="p-2">{staff.tables}</td>
-                  <td className="p-2">${staff.orderTotal.toLocaleString()}</td>
-                  <td className="p-2">${staff.overallTips.toLocaleString()}</td>
-                  <td className="p-2">
-                    <button className="text-blue-500 hover:underline">
-                      View
-                    </button>
-                  </td>
+          <div className="p-4 ml-20">
+            <div className="flex justify-between mb-4">
+              <div className="text-gray-600">Total: 4</div>
+              <div className="flex space-x-2">
+                <button className="text-black border-b-blue-500 hover:bg-gray-100 px-2 py-1 rounded">
+                  Download report
+                </button>
+                <input 
+                  type="date" 
+                  className="border text-black rounded px-2 py-1"
+                  defaultValue="2025-03-25"
+                />
+              </div>
+            </div>
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-gray-100 text-gray-600">
+                  <th className="p-2">Staff</th>
+                  <th className="p-2">Started on</th>
+                  <th className="p-2">
+                    <ShoppingCart className="inline-block mr-1" size={16} />
+                    Orders taken
+                  </th>
+                  <th className="p-2">
+                    <Clock className="inline-block mr-1" size={16} />
+                    Avg serving time
+                  </th>
+                  <th className="p-2">
+                    <Table className="inline-block mr-1" size={16} />
+                    Tables
+                  </th>
+                  <th className="p-2">Order total</th>
+                  <th className="p-2">Overall tips</th>
+                  <th className="p-2">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {staffData.map((staff) => (
+                  <tr key={staff.id} className="border-b text-black hover:bg-gray-50">
+                    <td className="p-2 flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                      <span>{staff.name}</span>
+                    </td>
+                    <td className="p-2">{staff.startedOn}</td>
+                    <td className="p-2">{staff.ordersTaken}</td>
+                    <td className="p-2">{staff.avgServingTime}</td>
+                    <td className="p-2">{staff.tables}</td>
+                    <td className="p-2">${staff.orderTotal.toLocaleString()}</td>
+                    <td className="p-2">${staff.overallTips.toLocaleString()}</td>
+                    <td className="p-2">
+                      <button className="text-blue-500 hover:underline">
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

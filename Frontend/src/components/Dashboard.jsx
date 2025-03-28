@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import SideBarMenu from './SideBarMenu';
 import NotificationsModal from './Notifications';
 
@@ -112,6 +112,14 @@ const Dashboard = () => {
                 </span>
               )}
             </button>
+            <div className="mr-4">
+              <Link 
+                to="/" 
+                className=" text-white px-3 py-1 rounded  transition-colors"
+              >
+                Logout
+              </Link>
+            </div>
             <div className="mr-4 text-sm text-gray-500">Andre Carvalli</div>
             <div className="w-10 h-10 bg-gray-300 rounded-full">
               <img

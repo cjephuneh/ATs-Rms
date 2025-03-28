@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { LayoutGrid } from 'lucide-react';
+import Header from './Header';
 import SideBarMenu from './SideBarMenu';
 
 const OrderDashboard = () => {
@@ -38,51 +39,58 @@ const OrderDashboard = () => {
   };
 
   return (
-    <div className="flex w-full h-full overflow-x-hidden">
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
       <SideBarMenu activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
-      <div className="flex flex-col flex-1 p-6">
-        <div className="flex items-center space-x-4 mb-6">
-          <LayoutGrid className="text-gray-600" />
-          <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
-        </div>
-
-        <div className="bg-white border rounded-lg shadow-sm p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">Live orders</h2>
-            <button 
-              className="px-4 py-2 bg-blue-500 text-blue rounded-lg"
-              onClick={() => setIsModalOpen(true)}
-            >
-              New Order
-            </button>
+      
+      {/* Main content area including Header */}
+      <div className="flex flex-col flex-1 overflow-x-hidden">
+        <Header />
+        
+        <div className="flex mb-120 flex-col flex-1 p-6">
+          <div className="flex items-center space-x-4 mb-6">
+            <LayoutGrid className="text-gray-600" />
+            <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
           </div>
 
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                {['Time', 'Order number', 'Client name', 'Delivery', 'Order total', 'Order items', 'Delivery status'].map((heading, index) => (
-                  <th key={index} className="p-3 text-left text-xs font-medium text-gray-500">{heading}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="p-3 text-sm text-gray-600">{order.time}</td>
-                  <td className="p-3 text-sm text-gray-600">{order.orderNumber}</td>
-                  <td className="p-3 text-sm text-gray-600">{order.clientName}</td>
-                  <td className="p-3 text-sm text-gray-600">{order.delivery}</td>
-                  <td className="p-3 text-sm text-gray-600">${order.orderTotal}</td>
-                  <td className="p-3 text-sm text-gray-600">{order.orderItems} items</td>
-                  <td className="p-3">
-                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(order.deliveryStatus)}`}>
-                      {order.deliveryStatus}
-                    </span>
-                  </td>
+          <div className="bg-white border rounded-lg shadow-sm p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-800">Live orders</h2>
+              <button 
+                className="px-4 py-2 bg-blue-500 text-blue rounded-lg"
+                onClick={() => setIsModalOpen(true)}
+              >
+                New Order
+              </button>
+            </div>
+
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  {['Time', 'Order number', 'Client name', 'Delivery', 'Order total', 'Order items', 'Delivery status'].map((heading, index) => (
+                    <th key={index} className="p-3 text-left text-xs font-medium text-gray-500">{heading}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {orders.map((order, index) => (
+                  <tr key={index} className="border-b hover:bg-gray-50">
+                    <td className="p-3 text-sm text-gray-600">{order.time}</td>
+                    <td className="p-3 text-sm text-gray-600">{order.orderNumber}</td>
+                    <td className="p-3 text-sm text-gray-600">{order.clientName}</td>
+                    <td className="p-3 text-sm text-gray-600">{order.delivery}</td>
+                    <td className="p-3 text-sm text-gray-600">${order.orderTotal}</td>
+                    <td className="p-3 text-sm text-gray-600">{order.orderItems} items</td>
+                    <td className="p-3">
+                      <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(order.deliveryStatus)}`}>
+                        {order.deliveryStatus}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
