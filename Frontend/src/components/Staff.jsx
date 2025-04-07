@@ -64,7 +64,7 @@ const StaffManagement = () => {
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
         
-        <div className="flex-1 mb-80 bg-white rounded-lg">
+        <div className="flex-1 mb-96 bg-white rounded-lg">
           <div className="flex justify-between items-center p-4 border-b">
             <div className="flex items-center space-x-2">
               <Users className="text-gray-600" />

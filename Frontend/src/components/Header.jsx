@@ -1,14 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
     const [notifications, setNotifications] = useState([]);
     const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+      const [userName, setUserName] = useState("");
+      const navigate = useNavigate();
+
+
+    useEffect(() => {
+    // Retrieve user name from localStorage
+    const storedName = localStorage.getItem("userName");
+    if (storedName) {
+      setUserName(storedName);
+    } else {
+      navigate("/"); // Redirect if no user is logged in
+    }
+  }, [navigate]);
 
     return(
         <div className="flex-1 p-4 overflow-hidden">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-500">Welcome Andre Carvalli</h1>
+          <h1 className="text-2xl font-bold text-gray-500">Welcome {userName}</h1>
           <div className="flex items-center">
             <button 
               onClick={() => setIsNotificationModalOpen(true)}
@@ -31,7 +45,7 @@ const Header = () => {
                 Logout
               </Link>
             </div>
-            <div className="mr-4 text-sm text-gray-500">Andre Carvalli</div>
+            <div className="mr-4 text-sm text-gray-500">{userName}</div>
 
             <div className="w-10 h-10 bg-gray-300 rounded-full">
               <img

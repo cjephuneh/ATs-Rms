@@ -1,176 +1,133 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import axios from "axios";
 
-const signupSchema = z
-  .object({
-    name: z.string().min(2, {
-      message: "Name must be at least 2 characters.",
-    }),
-    email: z.string().email({
-      message: "Please enter a valid email address.",
-    }),
-    password: z.string().min(8, {
-      message: "Password must be at least 8 characters.",
-    }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  })
+const signupSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters long." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  role: z.enum(["user", "admin"], { message: "Role is required." }),
+});
 
 export default function SignupPage() {
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      confirmPassword: "",
+      role: "user", // Default role
     },
-  })
+  });
 
   async function onSubmit(data) {
-    setIsLoading(true)
-
+    setIsLoading(true);
+  
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      alert("Account created successfully!")
-
-      navigate("/login") // Replaced router.push with navigate
+      const response = await axios.post("http://localhost:8080/api/auth/register", data);
+  
+      console.log("Response Data:", response.data);
+  
+      alert("Signup successful! You can now log in.");
+      navigate("/"); // ✅ Redirect to login page after signup
     } catch (error) {
-      alert("Something went wrong. Please try again.")
+      console.error("Signup Error:", error.response?.data || error);
+      alert(error.response?.data?.error || "Something went wrong. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
+  
+  
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
-        <div className="bg-green-600 px-6 py-8 text-center text-white">
-          <h2 className="text-3xl font-bold tracking-tight">Create Account</h2>
-          <p className="mt-2 text-sm text-green-100">Join ATS Restaurant Management System</p>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
+      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white shadow-xl">
+        <div className="bg-teal-600 px-6 py-8 text-center text-white">
+          <h2 className="text-3xl font-bold">Create an Account</h2>
+          <p className="mt-2 text-sm text-blue-100">Join ATS Restaurant Management System</p>
         </div>
 
         <div className="px-6 py-8">
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Full Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Full Name
-              </label>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full Name</label>
               <input
                 id="name"
                 type="text"
-                placeholder="John Doe"
-                {...form.register("name")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                {...register("name")}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:ring-teal-500 focus:border-teal-500"
               />
-              {form.formState.errors.name && (
-                <p className="mt-1 text-xs text-red-600">{form.formState.errors.name.message}</p>
-              )}
+              {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>}
             </div>
 
+            {/* Email Address */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email Address
-              </label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
               <input
                 id="email"
                 type="email"
-                placeholder="john.doe@example.com"
-                {...form.register("email")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                {...register("email")}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:ring-teal-500 focus:border-teal-500"
               />
-              {form.formState.errors.email && (
-                <p className="mt-1 text-xs text-red-600">{form.formState.errors.email.message}</p>
-              )}
+              {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
             </div>
 
+            {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
               <input
                 id="password"
                 type="password"
-                {...form.register("password")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                {...register("password")}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:ring-teal-500 focus:border-teal-500"
               />
-              <p className="mt-1 text-xs text-gray-500">Password must be at least 8 characters long</p>
-              {form.formState.errors.password && (
-                <p className="mt-1 text-xs text-red-600">{form.formState.errors.password.message}</p>
-              )}
+              {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
             </div>
 
+            {/* Role Selection */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                {...form.register("confirmPassword")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/50"
-              />
-              {form.formState.errors.confirmPassword && (
-                <p className="mt-1 text-xs text-red-600">{form.formState.errors.confirmPassword.message}</p>
-              )}
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700">Select Role</label>
+              <select
+                id="role"
+                {...register("role")}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:ring-teal-500 focus:border-teal-500"
+              >
+                <option value="admin">Admin</option>
+              </select>
+              {errors.role && <p className="mt-1 text-xs text-red-600">{errors.role.message}</p>}
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-md bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full rounded-md bg-teal-600 px-4 py-3 text-sm font-medium text-white hover:bg-teal-700 transition"
             >
-              {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Creating account...
-                </span>
-              ) : (
-                "Sign Up"
-              )}
+              {isLoading ? "Creating account..." : "Sign Up"}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <Link to="/" className="font-medium text-green-600 hover:text-green-500">
-                Log in
-              </Link>
-            </p>
-          </div>
-
-          <div className="mt-8 text-center">
-            <p className="text-xs text-gray-500">By signing up, you agree to our Terms of Service and Privacy Policy</p>
-          </div>
+          {/* Login Link */}
+          <p className="mt-4 text-sm text-gray-600 text-center">
+            Already have an account?{" "}
+            <Link to="/" className="text-teal-600 hover:underline">
+              Log in
+            </Link>
+          </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

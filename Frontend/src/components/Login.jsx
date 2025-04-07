@@ -1,147 +1,91 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-const loginSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(1, {
-    message: "Password is required.",
-  }),
-  rememberMe: z.boolean().default(false).optional(),
-});
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function LoginPage() {
-  const navigate = useNavigate(); // Replaces useRouter()
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      rememberMe: false,
-    },
-  });
-
-  async function onSubmit(data) {
+  async function handleLogin(e) {
+    e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Simulated API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await axios.post("http://localhost:8080/api/auth/login", formData);
+      const { token, user } = response.data;
 
-      alert("Login successful!");
-      navigate("/dashboard"); // Replaces router.push()
+      if (token) {
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("userName", user.name); // Save user name
+
+        alert("Login successful!");
+        navigate("/dashboard");
+      }
     } catch (error) {
-      alert("Invalid email or password. Please try again.");
+      console.error("Login Error:", error.response?.data || error);
+      alert(error.response?.data?.error || "Invalid credentials");
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div className="flex min-h-screen text-black items-center justify-center bg-white px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
-        <div className="bg-green-600 px-6 py-8 text-center text-white">
-          <h2 className="text-3xl font-bold tracking-tight">Welcome Back</h2>
-          <p className="mt-2 text-sm text-green-100">Log in to ATS Restaurant Management System</p>
+    <div className="flex min-h-screen items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-teal-500 to-teal-300 px-6 py-8 text-center text-white rounded-t-2xl">
+          <h2 className="text-4xl font-bold">Welcome Back!</h2>
+          <p className="mt-2 text-sm text-green-100">Log in to access your account</p>
         </div>
 
-        <div className="px-6 py-8">
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Form Container */}
+        <div className="px-8 py-10">
+          <form onSubmit={handleLogin} className="space-y-6">
+            {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email Address
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
               <input
-                id="email"
                 type="email"
-                placeholder="john.doe@example.com"
-                {...form.register("email")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2 shadow-sm focus:ring-green-500 focus:border-green-500 transition duration-300"
+                required
               />
-              {form.formState.errors.email && (
-                <p className="mt-1 text-xs text-red-600">{form.formState.errors.email.message}</p>
-              )}
             </div>
 
+            {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Password</label>
               <input
-                id="password"
                 type="password"
-                placeholder="Enter your password"
-                {...form.register("password")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2 shadow-sm focus:ring-green-500 focus:border-green-500 transition duration-300"
+                required
               />
-              {form.formState.errors.password && (
-                <p className="mt-1 text-xs text-red-600">{form.formState.errors.password.message}</p>
-              )}
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="rememberMe"
-                  type="checkbox"
-                  {...form.register("rememberMe")}
-                  className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                />
-                <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
-                  Remember me
-                </label>
-              </div>
-
-              <Link to="/forgot-password" className="text-sm font-medium text-green-600 hover:text-green-500">
-                Forgot password?
-              </Link>
-            </div>
-
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-md bg-green-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full rounded-lg bg-gradient-to-r from-teal-500 to-green-500 px-5 py-3 text-lg font-semibold text-white shadow-md hover:opacity-90 transition duration-300"
             >
-              {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Logging in...
-                </span>
-              ) : (
-                "Log In"
-              )}
+              {isLoading ? "Logging in..." : "Log In"}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don&apos;t have an account?{" "}
-              <Link to="/signup" className="font-medium text-green-600 hover:text-green-500">
-                Sign up
-              </Link>
-            </p>
-          </div>
+          {/* Signup Redirect */}
+          <p className="mt-6 text-center text-gray-600">
+            Don't have an account?{" "}
+            <button
+              onClick={() => navigate("/signup")}
+              className="text-teal-600 font-semibold hover:underline"
+            >
+              Sign up
+            </button>
+          </p>
         </div>
       </div>
     </div>

@@ -1,10 +1,24 @@
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import SideBarMenu from './SideBarMenu';  
+import { useNavigate } from 'react-router-dom';
 
 const Accounting = () => {
    const [activeMenu, setActiveMenu] = useState('Accounting');
    const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
    const notifications = []; // Assuming empty notifications array for now
+   const navigate = useNavigate()
+
+   const [userName, setUserName] = useState("");
+
+   useEffect(() => {
+    // Retrieve user name from localStorage
+    const storedName = localStorage.getItem("userName");
+    if (storedName) {
+      setUserName(storedName);
+    } else {
+      navigate("/"); // Redirect if no user is logged in
+    }
+  }, [navigate]);
 
    return (
      <div className="flex w-full h-full">
@@ -12,7 +26,7 @@ const Accounting = () => {
        
        <div className="flex-1 p-4 overflow-hidden">
          <div className="flex justify-between items-center mb-4">
-           <h1 className="text-2xl font-bold text-gray-500">Welcome Andre Carvalli</h1>
+           <h1 className="text-2xl font-bold text-gray-500">Welcome {userName}</h1>
            <div className="flex items-center">
              <button 
                onClick={() => setIsNotificationModalOpen(true)}
@@ -27,7 +41,7 @@ const Accounting = () => {
                  </span>
                )}
              </button>
-             <div className="mr-4 text-sm text-gray-500">Andre Carvalli</div>
+             <div className="mr-4 text-sm text-gray-500">{userName}</div>
              <div className="w-10 h-10 bg-gray-300 rounded-full">
                <img
                  className="rounded-full h-10"
